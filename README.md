@@ -24,3 +24,13 @@ $ python url-short.py
 $ curl -F "url=something.com" localhost:5000/shorten
 ```
 
+
+## TODO
+
+Following things need to be done.
+
+* validate the input urls.
+* write a function to reload the stored dict of tokens and urls.
+* Handle the response at `/get/<token>` where it should redirect to original
+    url.
+

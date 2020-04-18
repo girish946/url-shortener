@@ -1,9 +1,16 @@
 from flask import Flask, request, jsonify
+from datetime import timedelta
+from validators import url
 import string
 import secrets
+import redis
 
 # TODO: validate the input urls, write a function to reload the stored dict of
 # tokens and urls.
+
+host = "localhost:5000/"
+rc = redis.Redis()
+strict_redis = redis.StrictRedis()
 
 html_form = """
 <!DOCTYPE html>
@@ -14,7 +21,7 @@ html_form = """
 
 <form action="/shorten" method="post">
   <label for="url">URL:</label><br>
-  <input type="text" id="url" name="url" value="something.com"><br>
+  <input type="text" id="url" name="url" value="girishjoshi.io"><br>
   <input type="submit" value="Submit">
 </form>
 
@@ -27,48 +34,58 @@ app = Flask(__name__)
 
 tokens = {}
 
-def dump_new_url(url, short_ver):
+
+def set_token(url, short_ver):
     """
     dumps the urls along with the tokens to a file.
     """
-    with open(config["urls-file"], "a") as uf:
-        uf.write(short_ver+":"+url+"\n")
+    strict_redis.setex(short_ver, timedelta(days=1), value=url)
 
 
 @app.route("/")
 def index():
     return html_form
 
-@app.route("/get/<token>")
+
+@app.route("/<token>")
 def retrive(token):
     """
-    retrives the url from tokens dict.
+    retrives the url from redis.
     """
-    if(token in tokens):
-        return tokens[token]
+    orig_url = strict_redis.get(token)
+    if token:
+        orig_url = orig_url.decode("utf-8")
+        return f"""<!DOCTYPE html>
+        <meta http-equiv="refresh" content="0;{orig_url}">
+        <html>
+        </html> """
     return "not found"
+
 
 @app.route("/shorten", methods=["GET", "POST"])
 def shorten():
     try:
         if request.method == "POST":
             print("need to process")
-            if("url" in request.form):
+            if "url" in request.form:
                 # TODO: validate the url
                 print(request.form["url"])
-                url = request.form["url"]
+                input_url = request.form["url"]
+                if not url(input_url):
+                    input_url = "http://" + input_url
                 token = secrets.token_urlsafe(6)
-                tokens[token] = url
-                dump_new_url(url, token)
-
-                return jsonify({url: "localhost:5000/get/"+token})
+                tokens[token] = input_url
+                set_token(input_url, token)
+                return f"""{input_url}: <a
+            href='/{token}'>{host}{token}</a>"""
             else:
                 return "url not provided"
 
         # TODO: implement the same for get requests.
         return "not processing the request"
     except Exception as e:
-        return "some thing went wrong"+ str(e)
+        return "some thing went wrong" + str(e)
+
 
 if __name__ == "__main__":
     app.run()

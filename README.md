@@ -1,7 +1,7 @@
 # url-shortener
 simple url shortener written in python.
 It used redis to store the shortened urls. You can check out the live demo
-of this url-shortener at [sh.girishjoshi](https://sh.girishjoshi.io/)
+of this url-shortener at [sh.girishjoshi.io](https://sh.girishjoshi.io/)
 
     url data expires in a day at sh.girishjoshi.io
 

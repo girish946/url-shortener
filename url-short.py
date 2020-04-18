@@ -5,8 +5,6 @@ import string
 import secrets
 import redis
 
-# TODO: validate the input urls, write a function to reload the stored dict of
-# tokens and urls.
 
 host = "localhost:5000/"
 rc = redis.Redis()
@@ -17,7 +15,7 @@ html_form = """
 <html>
 <body>
 
-<h2>HTML Forms</h2>
+The simple <a href="https://github.com/girish946/url-shortener">url-shortener<a> written in python
 
 <form action="/shorten" method="post">
   <label for="url">URL:</label><br>
@@ -29,7 +27,6 @@ html_form = """
 </html>
 """
 
-config = {"urls-file": "urls.txt"}
 app = Flask(__name__)
 
 tokens = {}
@@ -68,7 +65,6 @@ def shorten():
         if request.method == "POST":
             print("need to process")
             if "url" in request.form:
-                # TODO: validate the url
                 print(request.form["url"])
                 input_url = request.form["url"]
                 if not url(input_url):

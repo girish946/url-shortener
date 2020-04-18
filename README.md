@@ -1,16 +1,24 @@
 # url-shortener
 simple url shortener written in python.
+It used redis to store the shortened urls. You can check out the live demo
+of this url-shortener at [sh.girishjoshi](https://sh.girishjoshi.io/)
+
+    url data expires in a day at sh.girishjoshi.io
 
 ### install
 
 #### dependencies
-* python3
+* python 3
+* redis
 * pipenv
+
 
 ```bash
 $ git clone https://github.com/girish946/url-shortener
 $ cd url-shortener
+$ pipenv --python 3
 $ pipenv install
+$ # start the redis server 
 $ python url-short.py
 ```
 
@@ -24,13 +32,8 @@ $ python url-short.py
 $ curl -F "url=something.com" localhost:5000/shorten
 ```
 
+### TODO
 
-## TODO
-
-Following things need to be done.
-
-* validate the input urls.
-* write a function to reload the stored dict of tokens and urls.
-* Handle the response at `/get/<token>` where it should redirect to original
-    url.
+* Create config file for string size of token.
+* Handle get requests for `/shorten`.
 
